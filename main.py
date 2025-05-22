@@ -40,7 +40,8 @@ df['is_weekend'] = df['pickup_weekday'].isin([5, 6]).astype(int)
 print("Data preparation completed. Ready for modeling.")
 
 features = [
-    'trip_distance',
+    'trip_duration',
+    #'trip_distance',
     'passenger_count',
     'pickup_hour',
     'pickup_weekday',
@@ -51,8 +52,15 @@ features = [
     'dropoff_longitude'
 ]
 
-X = df[features].copy()
+print(df.columns)
+
+newFeatures = features.copy()
+newFeatures.remove('trip_duration')
+print(newFeatures)
+X = df[newFeatures]
 y = df['trip_duration']
+print(X)
+print(y)
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=222)
 
@@ -76,9 +84,12 @@ print(f"Random Forest Model Performance:")
 print(f"Root Mean Squared Error: {rmse:.4f} minutes")
 print(f"R-squared: {r2:.4f}")
 
+print(newFeatures)
+print(rf_model.feature_importances_)
+
 # Basic feature importance
 feature_importance = pd.DataFrame({
-    'Feature': features,
+    'Feature': newFeatures,
     'Importance': rf_model.feature_importances_
 }).sort_values('Importance', ascending=False)
 
@@ -87,5 +98,5 @@ print(feature_importance)
 
 # Save the model
 
-joblib.dump(rf_model, 'taxi_duration_model.pkl')
-print("Model saved as 'taxi_duration_model.pkl'")
+joblib.dump(rf_model, 'taxi_duration_model_noDistance.pkl')
+print("Model saved as 'taxi_duration_model_noDistance.pkl'")
